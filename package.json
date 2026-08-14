@@ -38,6 +38,6 @@
     "@earendil-works/pi-coding-agent": "*"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=18.0.0"
   }
 }
