@@ -1,0 +1,43 @@
+{
+  "name": "pi-clear-screen",
+  "version": "0.1.0",
+  "description": "Pi extension: /clear wipes the visible transcript only. Session file, session name, and model context are untouched — unlike every other /clear package, which maps to /new.",
+  "license": "MIT",
+  "author": "zliu250",
+  "type": "module",
+  "keywords": [
+    "pi-package",
+    "pi-extension",
+    "pi",
+    "pi-coding-agent",
+    "clear",
+    "cls",
+    "transcript",
+    "tui",
+    "terminal"
+  ],
+  "homepage": "https://github.com/zliu250/pi-clear-screen#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zliu250/pi-clear-screen.git"
+  },
+  "bugs": {
+    "url": "https://github.com/zliu250/pi-clear-screen/issues"
+  },
+  "pi": {
+    "extensions": [
+      "./extensions"
+    ]
+  },
+  "files": [
+    "extensions",
+    "README.md",
+    "LICENSE"
+  ],
+  "peerDependencies": {
+    "@earendil-works/pi-coding-agent": "*"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
