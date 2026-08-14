@@ -57,7 +57,13 @@ Run `/clear` again after those.
 
 ## Compatibility
 
-Written against Pi `0.84.x`. It reaches into TUI internals that are not part of the documented extension API, so it degrades defensively: if the container layout is not recognised it does nothing and warns, rather than corrupting the render state. It also works in fullscreen (alt-screen) mode, where `restoreRenderState` and `terminal` are absent.
+Written against Pi `0.84.x`. It reaches into TUI internals that are not part of the documented extension API, so it degrades defensively:
+
+- Unrecognised container layout → does nothing, warns, leaves the render state alone.
+- Fullscreen (alt-screen) mode → works; `terminal` and `restoreRenderState` are optional.
+- Non-TUI modes (`print`, `json`, `rpc`) → refuses up front. The host stubs `ui.custom()` as `async () => undefined` there, so the factory never runs.
+
+Every one of those paths is covered by a test.
 
 No hotkey is registered — `ctrl+l` is already Pi's model selector.
 
@@ -65,10 +71,15 @@ No hotkey is registered — `ctrl+l` is already Pi's model selector.
 
 ```bash
 git clone https://github.com/zliu250/pi-clear-screen
+cd pi-clear-screen
+npm install
+npm test         # Node's built-in test runner, no framework
+npm run typecheck
+
 pi install ./pi-clear-screen     # local path install, no copy
 ```
 
-Pi loads TypeScript through jiti, so there is no build step.
+Pi loads TypeScript through jiti, so there is no build step. `npm test` uses native TypeScript stripping and needs Node >= 22.6; the extension itself runs on Node >= 18.
 
 ## License
 

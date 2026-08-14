@@ -1,6 +1,6 @@
 {
   "name": "pi-clear-screen",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Pi extension: /clear wipes the visible transcript only. Session file, session name, and model context are untouched — unlike every other /clear package, which maps to /new.",
   "license": "MIT",
   "author": "zliu250",
@@ -39,5 +39,13 @@
   },
   "engines": {
     "node": ">=18.0.0"
+  },
+  "scripts": {
+    "test": "node --experimental-strip-types --test test/*.test.ts",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "devDependencies": {
+    "@earendil-works/pi-coding-agent": "*",
+    "typescript": "^5.9.3"
   }
 }

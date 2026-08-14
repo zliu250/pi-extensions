@@ -96,6 +96,15 @@ function wipe(tui: TuiLike): boolean {
 }
 
 async function clearScreen(ctx: ExtensionCommandContext): Promise<void> {
+	// Guard terminal-only UI, per the extension docs. Outside TUI mode the host
+	// supplies `custom: async () => undefined`, which resolves without ever
+	// invoking the factory — so without this check we would report "no
+	// transcript to wipe" when the real answer is "there is no terminal".
+	if (ctx.mode !== "tui") {
+		ctx.ui.notify(`/clear needs interactive TUI mode (running in ${ctx.mode})`, "warning");
+		return;
+	}
+
 	let wiped = false;
 	try {
 		await ctx.ui.custom<void>((tui, _theme, _keybindings, done) => {
@@ -113,10 +122,11 @@ async function clearScreen(ctx: ExtensionCommandContext): Promise<void> {
 		return;
 	}
 
-	// Success is silent, like `clear` in a shell. Only speak up if the TUI
-	// shape was unrecognised or we are not in interactive mode.
+	// Success is silent, like `clear` in a shell. Only speak up if the mounted
+	// container layout was not recognised, which means a Pi version whose TUI
+	// structure changed underneath us.
 	if (!wiped) {
-		ctx.ui.notify("/clear: no interactive transcript to wipe", "warning");
+		ctx.ui.notify("/clear: unrecognised TUI layout, nothing wiped", "warning");
 	}
 }
 
