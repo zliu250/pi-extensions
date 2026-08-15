@@ -55,6 +55,8 @@ The transcript is **hidden, not deleted**. Anything that makes Pi rebuild the ch
 
 Run `/clear` again after those.
 
+This cannot be automated soundly with the current extension API: Pi fires no event when it rebuilds the chat (`ctrl+o`, theme change), `/reload` restarts extensions so any "was cleared" flag is lost, and re-wiping after `session_tree` would hide the branch you just navigated to see. Persisting the flag in the session file would break this package's core promise of never touching the session.
+
 ## Compatibility
 
 Written against Pi `0.84.x`. It reaches into TUI internals that are not part of the documented extension API, so it degrades defensively:
@@ -63,7 +65,7 @@ Written against Pi `0.84.x`. It reaches into TUI internals that are not part of 
 - Fullscreen (alt-screen) mode → works; `terminal` and `restoreRenderState` are optional.
 - Non-TUI modes (`print`, `json`, `rpc`) → refuses up front. The host stubs `ui.custom()` as `async () => undefined` there, so the factory never runs.
 
-Every one of those paths is covered by a test.
+Every one of those paths is covered by a test, and `test/smoke.test.ts` verifies the internals assumptions (document container layout, `Container` contract, `TuiMainScreen` render-state shape) against the actually installed Pi on every `npm test` / CI run, so version drift is caught before users hit it.
 
 No hotkey is registered — `ctrl+l` is already Pi's model selector.
 
@@ -80,6 +82,8 @@ pi install ./pi-clear-screen     # local path install, no copy
 ```
 
 Pi loads TypeScript through jiti, so there is no build step. `npm test` uses native TypeScript stripping and needs Node >= 22.6; the extension itself runs on Node >= 18.
+
+CI runs tests and typecheck on every push and PR. Releases are published manually: bump the version, update the CHANGELOG, and `npm publish`.
 
 ## License
 

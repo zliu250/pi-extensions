@@ -49,6 +49,23 @@ interface TuiLike {
 	}) => void;
 }
 
+/**
+ * Blank frame for `TuiMainScreen.restoreRenderState()`. Exported so the smoke
+ * test can verify the shape still matches what the real Pi's
+ * `captureRenderState()` produces.
+ */
+export function resetRenderState() {
+	return {
+		previousLines: [] as string[],
+		previousWidth: -1,
+		previousHeight: -1,
+		cursorRow: 0,
+		hardwareCursorRow: 0,
+		maxLinesRendered: 0,
+		previousViewportTop: 0,
+	};
+}
+
 const isContainer = (value: unknown): value is ClearableContainer =>
 	typeof value === "object" && value !== null && Array.isArray((value as ClearableContainer).children);
 
@@ -81,15 +98,7 @@ function wipe(tui: TuiLike): boolean {
 
 	// Invalidate the cached frame so the next paint is a full redraw rather
 	// than a diff against rows we just erased behind the renderer's back.
-	tui.restoreRenderState?.({
-		previousLines: [],
-		previousWidth: -1,
-		previousHeight: -1,
-		cursorRow: 0,
-		hardwareCursorRow: 0,
-		maxLinesRendered: 0,
-		previousViewportTop: 0,
-	});
+	tui.restoreRenderState?.(resetRenderState());
 
 	tui.requestRender?.(true);
 	return true;
