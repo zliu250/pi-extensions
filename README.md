@@ -19,14 +19,4 @@ pi install npm:pi-clear-screen        # or try first: pi -e npm:pi-clear-screen
 pi install npm:pi-dump-session
 ```
 
-## Development
-
-```bash
-npm ci                                # install all workspace dependencies
-npm test                              # run all package tests (unit + smoke)
-npm run typecheck                     # type-check all packages, strict
-npm test -w packages/<name>           # run one package's tests
-pi -e ./packages/<name>               # run one package from source
-```
-
-See each package's `README.md` for usage and details, and `RELEASING.md` for the release process.
+See each package's `README.md` for usage and details, and [CONTRIBUTING.md](CONTRIBUTING.md) for development.
