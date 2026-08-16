@@ -1,46 +1,55 @@
 # pi-extensions
 
-A collection of extensions for [Pi](https://pi.dev). Each lives in `packages/` as a self-contained pi package, published to npm and **installable individually**:
+zliu250's [Pi](https://pi.dev) extensions. Each package under `packages/` is self-contained, published to npm, and installable individually.
 
-| Package | Commands | What it does |
+## Packages
+
+| Package | Commands | Description |
 |---|---|---|
-| [`pi-clear-screen`](packages/pi-clear-screen) | `/clear`, `/cls` | Wipes **what is on screen** and nothing else — session file, name, history, and model context untouched |
-| [`pi-dump-session`](packages/pi-dump-session) | `/dump`, `/incognito` | Erases session files **from disk**: `/dump` = `/new` + delete the old session; `/incognito` = auto-delete this session's file when it ends |
+| [`pi-clear-screen`](packages/pi-clear-screen) | `/clear`, `/cls` | Wipe what is on screen and nothing else — session file, name, history, and model context untouched |
+| [`pi-dump-session`](packages/pi-dump-session) | `/dump`, `/incognito` | Erase session files from disk: `/dump` is `/new` plus delete the old session; `/incognito` auto-deletes the current session's file when it ends |
+
+## Install
 
 ```bash
 pi install npm:pi-clear-screen
 pi install npm:pi-dump-session
 ```
 
-To install everything at once from git instead:
+Try one without installing it persistently:
 
 ```bash
-pi install git:github.com/zliu250/pi-extensions
+pi -e npm:pi-dump-session
 ```
 
-> Don't combine the git install with the individual npm installs on the same machine — the extensions would load twice (`/clear:1`, `/clear:2`, ...).
+Installing this repository as a git package (`pi install git:github.com/zliu250/pi-extensions`) loads every extension in `packages/`. Do not do that on a host that also installs the npm packages, or the extensions load twice.
 
-> **Security note:** pi extensions run with your full system permissions. Review the source (each package is one short file) before installing.
+Pi extensions run with your full system permissions — review the source (each package is one short file) before installing.
 
 ## Development
 
 ```bash
-git clone https://github.com/zliu250/pi-extensions
-cd pi-extensions
 npm ci
-npm test             # all packages, Node's built-in test runner, no framework
-npm run typecheck    # all packages, strict
+npm test             # every package's unit + smoke tests
+npm run typecheck    # strict, all packages
 
 npm test -w packages/pi-dump-session   # one package
-pi -e ./packages/pi-dump-session       # try one package without installing
+pi -e ./packages/pi-dump-session       # run one package from source
 ```
 
-Pi loads TypeScript through jiti, so there is no build step. `npm test` uses native TypeScript stripping and needs Node >= 22.6; the extensions themselves run on Node >= 18.
+No build step — Pi loads TypeScript directly. `npm test` needs Node >= 22.6 (native type stripping); the extensions run on Node >= 18.
 
-Each package ships a smoke test that checks every assumption it makes about Pi — `pi-clear-screen`'s undocumented TUI internals, `pi-dump-session`'s documented extension APIs — against the actually installed `@earendil-works/pi-coding-agent`, so Pi version drift is caught in CI before users hit it.
+Each package's smoke test pins its assumptions about Pi — `pi-clear-screen`'s TUI internals, `pi-dump-session`'s documented extension APIs — against the actually installed `@earendil-works/pi-coding-agent`, so a Pi upgrade that breaks them fails CI instead of surfacing as user reports.
 
-CI runs tests and typecheck on every push and PR (Node 22/24). Releases are published manually per package: bump the version, update the package's CHANGELOG, and `npm publish` from its directory.
+## Publishing
+
+Manual, per package: bump the version, update the package's `CHANGELOG.md`, then
+
+```bash
+npm publish -w packages/<name>
+git tag -a "<name>@<version>" -m "<summary>" && git push origin "<name>@<version>"
+```
 
 ## License
 
-MIT
+MIT, per package.
