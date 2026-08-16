@@ -1,6 +1,6 @@
 # pi-extensions
 
-zliu250's [Pi](https://pi.dev) extensions. Each package under `packages/` is self-contained, published to npm, and installable individually.
+A collection of extensions for [Pi](https://pi.dev). Each is published to npm as its own package — install only what you want.
 
 ## Packages
 
@@ -41,15 +41,6 @@ No build step — Pi loads TypeScript directly. `npm test` needs Node >= 22.6 (n
 
 Each package's smoke test pins its assumptions about Pi — `pi-clear-screen`'s TUI internals, `pi-dump-session`'s documented extension APIs — against the actually installed `@earendil-works/pi-coding-agent`, so a Pi upgrade that breaks them fails CI instead of surfacing as user reports.
 
-## Publishing
-
-Manual, per package: bump the version, update the package's `CHANGELOG.md`, then
-
-```bash
-npm publish -w packages/<name>
-git tag -a "<name>@<version>" -m "<summary>" && git push origin "<name>@<version>"
-```
-
 ## License
 
-MIT, per package.
+MIT
