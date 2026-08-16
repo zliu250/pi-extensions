@@ -1,89 +1,124 @@
-# pi-clear-screen
+# @zliu250/pi-extensions
 
-`/clear` for [Pi](https://pi.dev) that behaves like `clear` in a shell: it wipes **what is on screen** and nothing else.
-
-Your session file, session name, message history, and token count are untouched.
+A collection of extensions for [Pi](https://pi.dev), each solving one thing precisely.
 
 ```bash
-pi install npm:pi-clear-screen
+pi install npm:@zliu250/pi-extensions
 ```
 
-Then `/clear` (or `/cls`).
+| Extension | Commands | What it does |
+|---|---|---|
+| [clear-screen](#clear-screen) | `/clear`, `/cls` | Wipes **what is on screen** and nothing else — session file, name, history, and model context untouched |
+| [dump-session](#dump-session) | `/dump`, `/incognito` | Erases session files **from disk**: `/dump` = `/new` + delete the old session; `/incognito` = auto-delete this session's file when it ends |
 
-## ⚠️ Read this before installing
+> **Security note:** pi extensions run with your full system permissions. Review the source (it's short) before installing.
 
-Several published packages already register `/clear`, and **all of them do the opposite of this one** — they map `/clear` to `/new`, which replaces the session file and throws away your session name:
+### Using only some extensions
 
-- [`pi-clear`](https://www.npmjs.com/package/pi-clear) — `newSession()` + `reload()`
-- [`@derogab/pi-clear`](https://www.npmjs.com/package/@derogab/pi-clear) — "alias for `/new`"
-- [`pi-aliases`](https://www.npmjs.com/package/pi-aliases) — `/clear` → `/new`
+Pi loads every extension in the package by default. To pick individual ones, use the object form in your `settings.json`:
 
-If you install one of those *and* this one, Pi keeps both and disambiguates them as `/clear:1` and `/clear:2`. One nukes your session, one doesn't, and you will not enjoy guessing which is which. **Pick one.** Use `/cls` here if you want to keep another package's `/clear`.
+```json
+{
+  "packages": [
+    {
+      "source": "npm:@zliu250/pi-extensions",
+      "extensions": ["extensions/dump-session.ts"]
+    }
+  ]
+}
+```
 
-## What it does, precisely
+or run `pi config` and toggle them interactively.
+
+---
+
+## clear-screen
+
+`/clear` (or `/cls`) behaves like `clear` in a shell: it wipes the visible transcript only.
 
 | | session file | session name | model context / tokens | screen |
 |---|---|---|---|---|
 | `/new` | new one | **gone** | reset | wiped |
 | `/compact` | same | same | summarised | kept |
-| **`/clear`** (this) | **same** | **same** | **untouched** | **wiped** |
+| **`/clear`** | **same** | **same** | **untouched** | **wiped** |
 
-Nothing in the session is read or written, so the name survives for free.
+This is a *display* command. To actually reclaim context window, use `/compact`. To actually delete the session, use `/dump` (below).
 
-This is a *display* command. If you want to actually reclaim context window, use `/compact`.
+### ⚠️ Command collisions
 
-## How it works
+Several published packages register `/clear` and **all of them map it to `/new`** — the opposite of this one: [`pi-clear`](https://www.npmjs.com/package/pi-clear), [`@derogab/pi-clear`](https://www.npmjs.com/package/@derogab/pi-clear), [`pi-aliases`](https://www.npmjs.com/package/pi-aliases). If you install one of those alongside this, Pi disambiguates them as `/clear:1` and `/clear:2` — one nukes your session, one doesn't. **Pick one**, or use `/cls` here.
 
-Pi's interactive TUI mounts a *document* container holding `[header, loadedResources, chat]`. Extensions get no direct handle on it, but `ctx.ui.custom()` passes the live `TUI` instance into its factory. So the extension:
+### How it works
 
-1. Grabs the TUI inside the factory and calls `done()` **synchronously**. `showExtensionCustom` sees `closed === true` and skips mounting entirely, so the editor is restored with no flicker and no stray component.
-2. Empties the three document containers.
-3. Writes `CSI 3J` (erase scrollback) followed by `clearScreen()` (`CSI 2J` + cursor home).
-4. Calls `restoreRenderState()` with a blank frame, so the differential renderer does not diff against rows that were just erased behind its back.
-5. `requestRender(true)` for a full repaint.
+Pi's interactive TUI mounts a *document* container holding `[header, loadedResources, chat]`. Extensions get no direct handle on it, but `ctx.ui.custom()` passes the live `TUI` instance into its factory. The extension grabs the TUI, resolves synchronously without mounting anything, empties the three containers, erases scrollback (`CSI 3J`) and viewport, resets the differential renderer's cached frame, and forces a full repaint. Success is silent, like real `clear`.
 
-Success is silent, like real `clear`. It only notifies on failure or if the TUI shape is unrecognised.
+### Known limitation
 
-## Known limitation
+The transcript is **hidden, not deleted**. Anything that makes Pi rebuild the chat from session entries repaints the full history: `ctrl+o` (tool output expansion), theme change, `/reload`, branch/tree navigation. Run `/clear` again after those. This cannot be automated soundly with the current extension API — Pi fires no event when it rebuilds the chat, and `/reload` restarts extensions.
 
-The transcript is **hidden, not deleted**. Anything that makes Pi rebuild the chat from session entries repaints the full history:
+### Compatibility
 
-- `ctrl+o` (tool output expansion toggle)
-- theme change
-- `/reload`
-- branch / tree navigation
+Written against Pi `0.84.x`. It reaches into TUI internals that are **not** part of the documented extension API, so it degrades defensively: unrecognised container layout → does nothing and warns; alt-screen mode → works; non-TUI modes (`print`, `json`, `rpc`) → refuses up front. `test/smoke.test.ts` verifies the internals assumptions against the actually installed Pi on every `npm test` / CI run.
 
-Run `/clear` again after those.
+---
 
-This cannot be automated soundly with the current extension API: Pi fires no event when it rebuilds the chat (`ctrl+o`, theme change), `/reload` restarts extensions so any "was cleared" flag is lost, and re-wiping after `session_tree` would hide the branch you just navigated to see. Persisting the flag in the session file would break this package's core promise of never touching the session.
+## dump-session
 
-## Compatibility
+Every pi session is saved forever as a `.jsonl` file under `~/.pi/agent/sessions/`. `/new` only starts a *new* file — nothing ever deletes old ones. These two commands are the eraser.
 
-Written against Pi `0.84.x`. It reaches into TUI internals that are not part of the documented extension API, so it degrades defensively:
+### `/dump` — new session + shred the old one
 
-- Unrecognised container layout → does nothing, warns, leaves the render state alone.
-- Fullscreen (alt-screen) mode → works; `terminal` and `restoreRenderState` are optional.
-- Non-TUI modes (`print`, `json`, `rpc`) → refuses up front. The host stubs `ui.custom()` as `async () => undefined` there, so the factory never runs.
+Exactly like `/new`, but after the replacement session starts, the abandoned session's file is **deleted from disk**. It disappears from `/resume` and is not recoverable.
 
-Every one of those paths is covered by a test, and `test/smoke.test.ts` verifies the internals assumptions (document container layout, `Container` contract, `TuiMainScreen` render-state shape) against the actually installed Pi on every `npm test` / CI run, so version drift is caught before users hit it.
+- Deletion happens inside `newSession({ withSession })`, i.e. only after the old runtime is fully torn down — nothing can still be writing the file.
+- If another extension cancels the switch (via `session_before_switch`, e.g. a confirm-guard), **nothing is deleted**.
+- If deletion fails (e.g. file locked), you get the path so you can remove it manually.
 
-No hotkey is registered — `ctrl+l` is already Pi's model selector.
+### `/incognito` — private-window mode for the current session
+
+Toggle it once; while ON, the session's file is deleted from disk when the session ends — quit pi, `/new`, or `/resume` away. Like a private browser window: close it and it never happened.
+
+- The flag is **persisted in the session itself** (`pi.appendEntry`), so it survives `/reload` and even resuming the session later. A footer status shows `incognito` while active.
+- `/reload` does *not* delete (the same session continues); `/fork` does *not* delete the parent file (the fork references it) — but the fork inherits the incognito flag, since forks copy entries.
+- Works with `session_shutdown` reasons `quit`, `new`, and `resume`.
+
+### Limitations
+
+- `SIGKILL` or a crash skips `session_shutdown`, so an incognito session file can survive a hard kill. Run `/dump` or delete it manually afterwards.
+- Deleted means deleted. There is no trash can. That is the point.
+
+### Only pi's own session file is touched
+
+`dump-session` deletes exactly one file: `ctx.sessionManager.getSessionFile()`. It never scans directories or deletes anything else.
+
+---
 
 ## Development
 
 ```bash
-git clone https://github.com/zliu250/pi-clear-screen
-cd pi-clear-screen
+git clone https://github.com/zliu250/pi-extensions
+cd pi-extensions
 npm install
 npm test         # Node's built-in test runner, no framework
 npm run typecheck
 
-pi install ./pi-clear-screen     # local path install, no copy
+pi install ./pi-extensions     # local path install, no copy
 ```
 
-Pi loads TypeScript through jiti, so there is no build step. `npm test` uses native TypeScript stripping and needs Node >= 22.6; the extension itself runs on Node >= 18.
+Pi loads TypeScript through jiti, so there is no build step. `npm test` uses native TypeScript stripping and needs Node >= 22.6; the extensions themselves run on Node >= 18.
 
-CI runs tests and typecheck on every push and PR. Releases are published manually: bump the version, update the CHANGELOG, and `npm publish`.
+`test/smoke.test.ts` checks every assumption we make about Pi — clear-screen's TUI internals *and* dump-session's documented APIs (`newSession`/`withSession`, `session_shutdown` reasons, `appendEntry`, `getSessionFile`) — against the actually installed `@earendil-works/pi-coding-agent`, so Pi version drift is caught in CI before users hit it.
+
+CI runs tests and typecheck on every push and PR. Releases are published manually: bump the version, update the CHANGELOG, and `npm publish --access public`.
+
+## Migrating from `pi-clear-screen`
+
+This package supersedes [`pi-clear-screen`](https://www.npmjs.com/package/pi-clear-screen) (same `/clear`, unchanged). Switch with:
+
+```bash
+pi remove npm:pi-clear-screen
+pi install npm:@zliu250/pi-extensions
+```
 
 ## License
 

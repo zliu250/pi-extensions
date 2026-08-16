@@ -1,7 +1,7 @@
 {
-  "name": "pi-clear-screen",
-  "version": "0.2.0",
-  "description": "Pi extension: /clear wipes the visible transcript only. Session file, session name, and model context are untouched — unlike every other /clear package, which maps to /new.",
+  "name": "@zliu250/pi-extensions",
+  "version": "0.3.0",
+  "description": "A collection of pi extensions. /clear wipes the visible transcript only; /dump starts a new session and erases the old one from disk; /incognito auto-erases the session file when the session ends.",
   "license": "MIT",
   "author": "zliu250",
   "type": "module",
@@ -13,20 +13,24 @@
     "clear",
     "cls",
     "transcript",
+    "incognito",
+    "session",
+    "privacy",
     "tui",
     "terminal"
   ],
-  "homepage": "https://github.com/zliu250/pi-clear-screen#readme",
+  "homepage": "https://github.com/zliu250/pi-extensions#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/zliu250/pi-clear-screen.git"
+    "url": "git+https://github.com/zliu250/pi-extensions.git"
   },
   "bugs": {
-    "url": "https://github.com/zliu250/pi-clear-screen/issues"
+    "url": "https://github.com/zliu250/pi-extensions/issues"
   },
   "pi": {
     "extensions": [
-      "./extensions"
+      "./extensions/clear-screen.ts",
+      "./extensions/dump-session.ts"
     ]
   },
   "files": [
