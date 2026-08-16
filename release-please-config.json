@@ -1,0 +1,15 @@
+{
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+  "tag-separator": "@",
+  "include-v-in-tag": false,
+  "packages": {
+    "packages/pi-clear-screen": {
+      "release-type": "node",
+      "component": "pi-clear-screen"
+    },
+    "packages/pi-dump-session": {
+      "release-type": "node",
+      "component": "pi-dump-session"
+    }
+  }
+}
