@@ -1,0 +1,32 @@
+# Agent notes
+
+Monorepo of Pi extensions. Each package under `packages/<name>/` is self-contained and published to npm independently.
+
+## Commands
+
+```bash
+npm ci                                # once, installs all workspace deps
+npm test                              # all packages (Node >= 22.6, native type stripping)
+npm run typecheck                     # strict tsc across all packages
+npm test -w packages/<name>           # one package
+```
+
+Always run `npm test` and `npm run typecheck` before committing. CI runs both on Node 22/24.
+
+## Hard rules
+
+- **No build step.** Extensions ship as `.ts`; Pi loads them via jiti. Never add a compile-to-dist step.
+- **Runtime imports** in extensions: only `node:*` built-ins and packages Pi bundles (`@earendil-works/pi-coding-agent`, `@earendil-works/pi-tui`, `typebox` — as type-only where possible). `@earendil-works/pi-coding-agent` stays a peerDependency `"*"` in each package; the real version lives in root devDependencies.
+- **Smoke tests are mandatory.** Any assumption about Pi (documented API shapes, TUI internals) must be asserted against the installed `@earendil-works/pi-coding-agent` in the package's `test/smoke.test.ts`, so a Pi upgrade fails CI here instead of breaking users.
+- **Session-replacement footguns** (see `docs/extensions.md` in the pi package): after `newSession()`/`fork()`/`switchSession()`, captured session-bound objects are stale — do post-switch work only inside `withSession(ctx)` and carry only plain data across.
+- Extension state that must survive `/reload` or resume goes through `pi.appendEntry()` + a `session_start` restore scan, not module-level variables alone.
+- Tests use Node's built-in runner (`node:test`, `node:assert/strict`) — no test frameworks.
+
+## Docs layout
+
+- `README.md` (root): user-facing index only
+- `packages/<name>/README.md`: user docs for that package (what npm shows)
+- `CONTRIBUTING.md`: human dev setup and conventions
+- `RELEASING.md`: publish + tag flow (manual, per package)
+
+When changing a package's behavior, update its `CHANGELOG.md` in the same commit.
