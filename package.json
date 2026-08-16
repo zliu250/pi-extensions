@@ -1,24 +1,10 @@
 {
-  "name": "@zliu250/pi-extensions",
-  "version": "0.3.0",
-  "description": "A collection of pi extensions. /clear wipes the visible transcript only; /dump starts a new session and erases the old one from disk; /incognito auto-erases the session file when the session ends.",
+  "name": "pi-extensions-monorepo",
+  "private": true,
+  "description": "Monorepo of pi extensions, each published to npm as an individually installable pi package.",
   "license": "MIT",
   "author": "zliu250",
   "type": "module",
-  "keywords": [
-    "pi-package",
-    "pi-extension",
-    "pi",
-    "pi-coding-agent",
-    "clear",
-    "cls",
-    "transcript",
-    "incognito",
-    "session",
-    "privacy",
-    "tui",
-    "terminal"
-  ],
   "homepage": "https://github.com/zliu250/pi-extensions#readme",
   "repository": {
     "type": "git",
@@ -27,25 +13,19 @@
   "bugs": {
     "url": "https://github.com/zliu250/pi-extensions/issues"
   },
+  "workspaces": [
+    "packages/*"
+  ],
   "pi": {
     "extensions": [
-      "./extensions/clear-screen.ts",
-      "./extensions/dump-session.ts"
+      "./packages/*/extensions/*.ts"
     ]
-  },
-  "files": [
-    "extensions",
-    "README.md",
-    "LICENSE"
-  ],
-  "peerDependencies": {
-    "@earendil-works/pi-coding-agent": "*"
   },
   "engines": {
     "node": ">=18.0.0"
   },
   "scripts": {
-    "test": "node --experimental-strip-types --test test/*.test.ts",
+    "test": "node --experimental-strip-types --test packages/*/test/*.test.ts",
     "typecheck": "tsc -p tsconfig.json"
   },
   "devDependencies": {

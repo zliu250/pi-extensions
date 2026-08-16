@@ -1,0 +1,47 @@
+{
+  "name": "pi-dump-session",
+  "version": "0.1.0",
+  "description": "Pi extension: /dump starts a new session and erases the old one from disk; /incognito auto-erases the current session's file when the session ends. Incognito mode for pi.",
+  "license": "MIT",
+  "author": "zliu250",
+  "type": "module",
+  "keywords": [
+    "pi-package",
+    "pi-extension",
+    "pi",
+    "pi-coding-agent",
+    "incognito",
+    "session",
+    "privacy",
+    "dump",
+    "erase"
+  ],
+  "homepage": "https://github.com/zliu250/pi-extensions/tree/main/packages/pi-dump-session#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zliu250/pi-extensions.git",
+    "directory": "packages/pi-dump-session"
+  },
+  "bugs": {
+    "url": "https://github.com/zliu250/pi-extensions/issues"
+  },
+  "pi": {
+    "extensions": [
+      "./extensions/dump-session.ts"
+    ]
+  },
+  "files": [
+    "extensions",
+    "README.md",
+    "LICENSE"
+  ],
+  "peerDependencies": {
+    "@earendil-works/pi-coding-agent": "*"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "test": "node --experimental-strip-types --test test/*.test.ts"
+  }
+}

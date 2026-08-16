@@ -1,20 +1,14 @@
 // Smoke test against the REAL installed @earendil-works/pi-coding-agent.
 //
-// The unit tests exercise mocks that encode our assumptions about Pi. This
-// file checks those assumptions against the actually installed Pi, so
-// `npm test` fails at CI time — not user-report time — when a Pi upgrade
-// changes:
+// The unit tests in clear-screen.test.ts exercise mocks that encode our
+// assumptions about Pi's TUI internals. This file checks those assumptions
+// against the actually installed Pi, so `npm test` fails at CI time — not
+// user-report time — when a Pi upgrade changes:
 //
-// For clear-screen (undocumented TUI internals):
 //   1. The document container layout ([header, loadedResources, chat]).
 //   2. Container's `children` / `clear()` contract.
 //   3. TuiMainScreen's render-state shape (what restoreRenderState accepts).
 //   4. The alt-screen TUI having no restoreRenderState (our optional-call path).
-//
-// For dump-session (documented extension API):
-//   5. ExtensionCommandContext.newSession with a withSession callback.
-//   6. session_shutdown reasons ("quit" | "reload" | "new" | "resume" | "fork").
-//   7. pi.appendEntry / custom entries and SessionManager.getSessionFile.
 //
 // Run with: npm test  (Node >= 22.6 for native TypeScript stripping)
 
@@ -26,16 +20,27 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 
 import clearScreenExtension, { resetRenderState } from "../extensions/clear-screen.ts";
 
-const packageRoot = fileURLToPath(new URL("..", import.meta.url));
-const agentDir = join(packageRoot, "node_modules", "@earendil-works", "pi-coding-agent");
+// In the workspaces monorepo, node_modules is hoisted to the repo root; walk
+// up from the package so this also works if the package is checked out alone.
+function findInstalled(...segments: string[]): string | undefined {
+	let dir = fileURLToPath(new URL("..", import.meta.url));
+	for (let i = 0; i < 4; i++) {
+		const candidate = join(dir, "node_modules", ...segments);
+		if (existsSync(candidate)) return candidate;
+		dir = join(dir, "..");
+	}
+	return undefined;
+}
+
+const agentDir = findInstalled("@earendil-works", "pi-coding-agent")!;
 
 // pi-tui is a dependency of the agent; it may be nested or hoisted.
 const tuiDir = [
-	join(agentDir, "node_modules", "@earendil-works", "pi-tui"),
-	join(packageRoot, "node_modules", "@earendil-works", "pi-tui"),
-].find(existsSync);
+	agentDir && join(agentDir, "node_modules", "@earendil-works", "pi-tui"),
+	findInstalled("@earendil-works", "pi-tui"),
+].find((dir) => !!dir && existsSync(dir));
 
-assert.ok(existsSync(agentDir), "devDependency @earendil-works/pi-coding-agent must be installed (npm ci)");
+assert.ok(agentDir && existsSync(agentDir), "devDependency @earendil-works/pi-coding-agent must be installed (npm ci)");
 assert.ok(tuiDir, "@earendil-works/pi-tui not found under the installed pi-coding-agent");
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -155,36 +160,5 @@ test("smoke: alt-screen TUI still has no restoreRenderState (optional-call path)
 		typeof TuiAltScreen.prototype.restoreRenderState,
 		"undefined",
 		"TuiAltScreen grew restoreRenderState — revisit the alt-screen fallback",
-	);
-});
-
-test("smoke: documented extension APIs used by dump-session still exist", () => {
-	const extensionTypes = readFileSync(join(agentDir, "dist", "core", "extensions", "types.d.ts"), "utf8");
-
-	assert.ok(
-		extensionTypes.includes("newSession(options?"),
-		"ExtensionCommandContext.newSession() disappeared — /dump depends on it",
-	);
-	assert.ok(
-		/withSession\?\s*:\s*\(ctx: ReplacedSessionContext\)/.test(extensionTypes),
-		"newSession's withSession callback signature changed — /dump deletes inside it",
-	);
-	assert.ok(
-		extensionTypes.includes('"quit" | "reload" | "new" | "resume" | "fork"'),
-		"session_shutdown reasons changed — /incognito's skip list (reload, fork) needs review",
-	);
-	assert.ok(
-		/appendEntry<T = unknown>\(customType: string, data\?: T\): void/.test(extensionTypes),
-		"pi.appendEntry signature changed — /incognito persistence needs review",
-	);
-
-	const sessionManagerTypes = readFileSync(join(agentDir, "dist", "core", "session-manager.d.ts"), "utf8");
-	assert.ok(
-		sessionManagerTypes.includes("getSessionFile(): string | undefined"),
-		"SessionManager.getSessionFile signature changed",
-	);
-	assert.ok(
-		/interface CustomEntry<T = unknown>[\s\S]{0,200}customType: string;[\s\S]{0,50}data\?: T;/.test(sessionManagerTypes),
-		"CustomEntry shape changed — /incognito's session_start restore scan needs review",
 	);
 });
