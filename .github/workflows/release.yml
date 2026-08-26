@@ -7,6 +7,16 @@ name: Release
 on:
   push:
     branches: [main]
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Release tag whose commit contains every package to publish
+        required: true
+        type: string
+      paths_released:
+        description: JSON array of workspace paths to publish
+        required: true
+        type: string
 
 permissions:
   contents: write
@@ -14,6 +24,7 @@ permissions:
 
 jobs:
   release-please:
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     outputs:
       releases_created: ${{ steps.rp.outputs.releases_created }}
@@ -27,26 +38,48 @@ jobs:
 
   publish:
     needs: release-please
-    if: needs.release-please.outputs.releases_created == 'true'
+    if: >-
+      always() &&
+      ((github.event_name == 'push' && needs.release-please.outputs.releases_created == 'true') ||
+      github.event_name == 'workflow_dispatch')
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      id-token: write # npm --provenance
+      id-token: write # npm trusted publishing
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.release_tag || github.sha }}
+          fetch-depth: 0
       - uses: actions/setup-node@v7
         with:
-          node-version: 22
+          node-version: 24
           registry-url: https://registry.npmjs.org
-          cache: npm
+          package-manager-cache: false
+      - name: Use npm with trusted publishing support
+        run: npm install --global npm@^11.5.1
       - run: npm ci
       - run: npm test
       - run: npm run typecheck
       - name: Publish released packages
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          PATHS_RELEASED: ${{ github.event_name == 'workflow_dispatch' && inputs.paths_released || needs.release-please.outputs.paths_released }}
         run: |
-          echo '${{ needs.release-please.outputs.paths_released }}' | jq -r '.[]' | while read -r path; do
-            echo "Publishing $path"
-            npm publish -w "$path" --provenance --access public
+          release_commit=$(git rev-parse HEAD)
+          echo "$PATHS_RELEASED" | jq -r '.[]' | while read -r path; do
+            package_name=$(jq -r '.name' "$path/package.json")
+            package_version=$(jq -r '.version' "$path/package.json")
+            package_tag="$package_name@$package_version"
+
+            if ! tag_commit=$(git rev-list -n 1 "$package_tag" 2>/dev/null); then
+              echo "Package tag does not exist: $package_tag" >&2
+              exit 1
+            fi
+            if [[ "$tag_commit" != "$release_commit" ]]; then
+              echo "$package_tag does not point to $release_commit" >&2
+              exit 1
+            fi
+
+            echo "Publishing $package_tag from $release_commit"
+            npm publish -w "$path" --access public
           done
