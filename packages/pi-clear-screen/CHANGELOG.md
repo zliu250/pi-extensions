@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.1](https://github.com/zliu250/pi-extensions/compare/pi-clear-screen@0.3.0...pi-clear-screen@0.3.1) (2026-08-26)
+
+
+### Bug Fixes
+
+* refresh extension compatibility and docs ([f53f75e](https://github.com/zliu250/pi-extensions/commit/f53f75e8fdf67a95447572d47d3b524d083cbf79))
+
 ## 0.3.0
 
 - Moved into the [`pi-extensions`](https://github.com/zliu250/pi-extensions) monorepo. The npm package name, the `/clear` and `/cls` commands, and their behavior are unchanged — no migration needed.

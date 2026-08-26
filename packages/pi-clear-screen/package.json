@@ -1,6 +1,6 @@
 {
   "name": "pi-clear-screen",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Pi extension: /clear wipes the visible transcript only. Session file, session name, and model context are untouched — unlike every other /clear package, which maps to /new.",
   "license": "MIT",
   "author": "zliu250",

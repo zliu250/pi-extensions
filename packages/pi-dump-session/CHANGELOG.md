@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1](https://github.com/zliu250/pi-extensions/compare/pi-dump-session@0.1.0...pi-dump-session@0.1.1) (2026-08-26)
+
+
+### Bug Fixes
+
+* refresh extension compatibility and docs ([f53f75e](https://github.com/zliu250/pi-extensions/commit/f53f75e8fdf67a95447572d47d3b524d083cbf79))
+
 ## 0.1.0
 
 - Initial release.
