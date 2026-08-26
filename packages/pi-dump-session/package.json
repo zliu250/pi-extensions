@@ -1,6 +1,6 @@
 {
   "name": "pi-dump-session",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Pi extension: /dump starts a new session and erases the old one from disk; /incognito auto-erases the current session's file when the session ends. Incognito mode for pi.",
   "license": "MIT",
   "author": "zliu250",
