@@ -12,7 +12,7 @@
 //   3. pi.appendEntry / CustomEntry shape (/incognito persistence).
 //   4. SessionManager.getSessionFile (the one file we delete).
 //
-// Run with: npm test  (Node >= 22.6 for native TypeScript stripping)
+// Run with: npm test  (Node >= 22.19 for native TypeScript stripping)
 
 import assert from "node:assert/strict";
 import { existsSync, readFileSync } from "node:fs";

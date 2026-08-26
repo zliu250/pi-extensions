@@ -22,10 +22,10 @@
     ]
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=22.19.0"
   },
   "scripts": {
-    "test": "node --experimental-strip-types --test packages/*/test/*.test.ts",
+    "test": "node --test packages/*/test/*.test.ts",
     "typecheck": "tsc -p tsconfig.json"
   },
   "devDependencies": {

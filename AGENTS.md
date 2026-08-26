@@ -6,7 +6,7 @@ Monorepo of Pi extensions. Each package under `packages/<name>/` is self-contain
 
 ```bash
 npm ci                                # once, installs all workspace deps
-npm test                              # all packages (Node >= 22.6, native type stripping)
+npm test                              # all packages (Node >= 22.19, native type stripping)
 npm run typecheck                     # strict tsc across all packages
 npm test -w packages/<name>           # one package
 ```

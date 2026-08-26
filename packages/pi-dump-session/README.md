@@ -8,7 +8,7 @@ Every pi session is saved forever as a `.jsonl` file under `~/.pi/agent/sessions
 pi install npm:pi-dump-session
 ```
 
-Part of the [pi-extensions](https://github.com/zliu250/pi-extensions) collection. Want to wipe only the *screen* and keep the session? That's [`pi-clear-screen`](../pi-clear-screen).
+Part of the [pi-extensions](https://github.com/zliu250/pi-extensions) collection. Want to wipe only the *screen* and keep the session? That's [`pi-clear-screen`](https://www.npmjs.com/package/pi-clear-screen).
 
 ## `/dump` — new session + shred the old one
 
@@ -37,7 +37,7 @@ Toggle it once; while ON, the session's file is deleted from disk when the sessi
 
 ## Development
 
-See the [monorepo README](../../README.md). Quick loop:
+See the [monorepo README](https://github.com/zliu250/pi-extensions#readme). Quick loop:
 
 ```bash
 npm test -w packages/pi-dump-session

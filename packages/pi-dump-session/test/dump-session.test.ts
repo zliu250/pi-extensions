@@ -1,4 +1,4 @@
-// Run with: npm test  (Node >= 22.6 for native TypeScript stripping)
+// Run with: npm test  (Node >= 22.19 for native TypeScript stripping)
 //
 // Unit tests for /dump and /incognito. File deletion is exercised against
 // real temp files; pi's ExtensionAPI and contexts are mocked in the same

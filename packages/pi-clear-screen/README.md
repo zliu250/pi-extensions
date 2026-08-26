@@ -10,7 +10,7 @@ pi install npm:pi-clear-screen
 
 Then `/clear` (or `/cls`).
 
-Part of the [pi-extensions](https://github.com/zliu250/pi-extensions) collection. Want to delete the session from disk instead of just the screen? That's [`pi-dump-session`](../pi-dump-session).
+Part of the [pi-extensions](https://github.com/zliu250/pi-extensions) collection. Want to delete the session from disk instead of just the screen? That's [`pi-dump-session`](https://www.npmjs.com/package/pi-dump-session).
 
 ## ⚠️ Read this before installing
 
@@ -73,7 +73,7 @@ No hotkey is registered — `ctrl+l` is already Pi's model selector.
 
 ## Development
 
-See the [monorepo README](../../README.md). Quick loop:
+See the [monorepo README](https://github.com/zliu250/pi-extensions#readme). Quick loop:
 
 ```bash
 npm test -w packages/pi-clear-screen

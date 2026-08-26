@@ -1,4 +1,4 @@
-// Run with: npm test  (Node >= 22.6 for native TypeScript stripping)
+// Run with: npm test  (Node >= 22.19 for native TypeScript stripping)
 //
 // The extension imports only types, so Node can execute it directly once type
 // annotations are stripped. No build step and no test framework.

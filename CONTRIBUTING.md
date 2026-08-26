@@ -17,7 +17,7 @@ npm test -w packages/<name>           # run one package's tests
 pi -e ./packages/<name>               # run one package from source, without installing
 ```
 
-No build step — Pi loads TypeScript directly (via jiti). `npm test` uses native type stripping and needs Node >= 22.6; the extensions themselves run on Node >= 18.
+No build step — Pi loads TypeScript directly (via jiti). The monorepo test tooling requires Node >= 22.19 and uses native type stripping; the published extensions remain runtime-compatible with Node >= 18 for older Pi releases.
 
 ## Layout
 

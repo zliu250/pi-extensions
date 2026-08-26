@@ -10,7 +10,7 @@
 //   3. TuiMainScreen's render-state shape (what restoreRenderState accepts).
 //   4. The alt-screen TUI having no restoreRenderState (our optional-call path).
 //
-// Run with: npm test  (Node >= 22.6 for native TypeScript stripping)
+// Run with: npm test  (Node >= 22.19 for native TypeScript stripping)
 
 import assert from "node:assert/strict";
 import { existsSync, readFileSync } from "node:fs";
