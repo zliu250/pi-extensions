@@ -1,6 +1,6 @@
 {
   "name": "pi-usage-all",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Pi extension: /usage shows quota, spend, and reset times for every connected Anthropic, Codex, and OpenRouter account.",
   "license": "MIT",
   "author": "zliu250",
