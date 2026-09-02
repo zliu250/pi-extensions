@@ -1,5 +1,5 @@
 {
   "packages/pi-clear-screen": "0.3.1",
   "packages/pi-dump-session": "0.1.1",
-  "packages/pi-usage-all": "0.0.0"
+  "packages/pi-usage-all": "0.0.1"
 }
