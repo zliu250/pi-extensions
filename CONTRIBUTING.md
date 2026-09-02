@@ -25,7 +25,8 @@ Each extension is a self-contained pi package under `packages/<name>/`:
 
 ```
 packages/<name>/
-├── extensions/<name>.ts    # the extension (single file)
+├── extensions/<name>.ts    # extension entry point
+├── src/                    # optional runtime helpers
 ├── test/<name>.test.ts     # unit tests (Node's built-in runner, no framework)
 ├── test/smoke.test.ts      # assumptions about Pi, checked against the installed Pi
 ├── package.json            # pi manifest, peerDependency on pi-coding-agent ("*")
@@ -35,8 +36,8 @@ packages/<name>/
 ## Conventions
 
 - **Smoke tests are mandatory.** Every assumption about Pi — documented API shapes or TUI internals — must be asserted against the actually installed `@earendil-works/pi-coding-agent`, so a Pi upgrade fails CI here instead of surfacing as user bug reports.
-- Only type imports from `@earendil-works/pi-coding-agent` (it is a peerDependency with `"*"`; real versions live in the root devDependencies for typechecking).
-- Keep each extension a single file where possible; keep READMEs user-facing.
+- Runtime imports are limited to Node built-ins and packages Pi bundles, such as `@earendil-works/pi-coding-agent` and `@earendil-works/pi-tui`. Keep `@earendil-works/pi-coding-agent` as a peerDependency with `"*"`; real versions live in the root devDependencies for tests and typechecking.
+- Keep each extension a single file where practical; use `src/` for focused runtime helpers and keep READMEs user-facing.
 - CI (`.github/workflows/ci.yml`) runs `npm ci && npm test && npm run typecheck` on Node 22/24 for every push and PR.
 
 ## Releases

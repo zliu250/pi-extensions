@@ -10,6 +10,10 @@
     "packages/pi-dump-session": {
       "release-type": "node",
       "component": "pi-dump-session"
+    },
+    "packages/pi-usage-all": {
+      "release-type": "node",
+      "component": "pi-usage-all"
     }
   }
 }

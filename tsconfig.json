@@ -12,5 +12,5 @@
     "lib": ["es2023"],
     "types": []
   },
-  "include": ["packages/*/extensions/**/*.ts", "packages/*/test/**/*.ts"]
+  "include": ["packages/*/extensions/**/*.ts", "packages/*/src/**/*.ts", "packages/*/test/**/*.ts"]
 }

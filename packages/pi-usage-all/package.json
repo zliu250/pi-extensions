@@ -1,0 +1,49 @@
+{
+  "name": "pi-usage-all",
+  "version": "0.0.0",
+  "description": "Pi extension: /usage shows quota, spend, and reset times for every connected Anthropic, Codex, and OpenRouter account.",
+  "license": "MIT",
+  "author": "zliu250",
+  "type": "module",
+  "keywords": [
+    "pi-package",
+    "pi-extension",
+    "pi",
+    "pi-coding-agent",
+    "usage",
+    "quota",
+    "anthropic",
+    "codex",
+    "openrouter",
+    "multi-account"
+  ],
+  "homepage": "https://github.com/zliu250/pi-extensions/tree/main/packages/pi-usage-all#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zliu250/pi-extensions.git",
+    "directory": "packages/pi-usage-all"
+  },
+  "bugs": {
+    "url": "https://github.com/zliu250/pi-extensions/issues"
+  },
+  "pi": {
+    "extensions": [
+      "./extensions/usage-all.ts"
+    ]
+  },
+  "files": [
+    "extensions",
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
+  "peerDependencies": {
+    "@earendil-works/pi-coding-agent": "*"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.ts"
+  }
+}

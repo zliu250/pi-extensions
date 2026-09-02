@@ -11,12 +11,14 @@ A monorepo of [Pi](https://pi.dev) extensions, built and released independently 
 |---|---|---|
 | [pi-clear-screen](packages/pi-clear-screen) | `/clear` that works like `clear` in a shell: wipes the screen, keeps your session, name, and context — every other `/clear` package secretly runs `/new` | [![npm](https://img.shields.io/npm/v/pi-clear-screen)](https://www.npmjs.com/package/pi-clear-screen) |
 | [pi-dump-session](packages/pi-dump-session) | Incognito mode for sessions: `/dump` starts fresh and deletes the old session file from disk; `/incognito` makes the current session self-destruct when it ends | [![npm](https://img.shields.io/npm/v/pi-dump-session)](https://www.npmjs.com/package/pi-dump-session) |
+| [pi-usage-all](packages/pi-usage-all) | `/usage` dashboard for every connected Anthropic, Codex, and OpenRouter credential, including multi-login aliases | [![npm](https://img.shields.io/npm/v/pi-usage-all)](https://www.npmjs.com/package/pi-usage-all) |
 
 ## Install
 
 ```bash
 pi install npm:pi-clear-screen        # or try first: pi -e npm:pi-clear-screen
 pi install npm:pi-dump-session
+pi install npm:pi-usage-all
 ```
 
 See each package's `README.md` for usage and details, and [CONTRIBUTING.md](CONTRIBUTING.md) for development.
